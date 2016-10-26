@@ -126,6 +126,8 @@ def process_signup():
     password = bottle.request.forms.get("password")
     verify = bottle.request.forms.get("verify")
 
+    print('Received: ' + username + ' - ' + password)
+
     # set these up in case we have an error case
     errors = {'username': cgi.escape(username), 'email': cgi.escape(email)}
     if validate_signup(username, password, verify, email, errors):

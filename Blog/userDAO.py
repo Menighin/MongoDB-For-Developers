@@ -42,20 +42,20 @@ class UserDAO:
     # of the format:
     # HASH(pw + salt),salt
     # use sha256
-
     def make_pw_hash(self, pw,salt=None):
         if salt == None:
             salt = self.make_salt();
-        return hashlib.sha256(pw + salt).hexdigest()+","+ salt
+        pw_bytes = pw.encode('utf-8')
+        salt_bytes = salt.encode('utf-8')
+        return hashlib.sha256(pw_bytes + salt_bytes).hexdigest()+","+ salt
 
     # Validates a user login. Returns user record or None
     def validate_login(self, username, password):
 
         user = None
+        blog_db = self.db
         try:
-            # XXX HW 2.3 Students Work Here
-            # you will need to retrieve right document from the users collection.
-            print ("This space intentionally left blank.")
+            user = blog_db.users.find_one({'_id': username})
         except:
             print ("Unable to query database for user")
 
@@ -82,11 +82,10 @@ class UserDAO:
             user['email'] = email
 
         try:
-            # XXX HW 2.3 Students work here
-            # You need to insert the user into the users collection.
-            # Don't over think this one, it's a straight forward insert.
+            blog_db = self.db
+            blog_db.users.insert(user)
 
-            print("This space intentionally left blank.")
+            print("User inserted!")
 
         except pymongo.errors.OperationFailure:
             print("oops, mongo error")
