@@ -42,6 +42,7 @@ class UserDAO:
     # of the format:
     # HASH(pw + salt),salt
     # use sha256
+
     def make_pw_hash(self, pw,salt=None):
         if salt == None:
             salt = self.make_salt();
@@ -53,20 +54,19 @@ class UserDAO:
     def validate_login(self, username, password):
 
         user = None
-        blog_db = self.db
         try:
-            user = blog_db.users.find_one({'_id': username})
+            user = self.users.find_one({'_id': username})
         except:
-            print ("Unable to query database for user")
+            print("Unable to query database for user")
 
         if user is None:
-            print ("User not in database")
+            print("User not in database")
             return None
 
         salt = user['password'].split(',')[1]
 
         if user['password'] != self.make_pw_hash(password, salt):
-            print ("user password is not a match")
+            print("user password is not a match")
             return None
 
         # Looks good
@@ -82,11 +82,7 @@ class UserDAO:
             user['email'] = email
 
         try:
-            blog_db = self.db
-            blog_db.users.insert(user)
-
-            print("User inserted!")
-
+            self.users.insert_one(user)
         except pymongo.errors.OperationFailure:
             print("oops, mongo error")
             return False
