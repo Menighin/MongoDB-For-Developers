@@ -52,6 +52,19 @@ def blog_index():
 
     return bottle.template('blog_template', dict(myposts=l, username=username))
 
+# The main page of the blog, filtered by tag
+@bottle.route('/tag/<tag>')
+def posts_by_tag(tag="notfound"):
+
+    cookie = bottle.request.get_cookie("session")
+    tag = cgi.escape(tag)
+
+    username = sessions.get_username(cookie)
+
+    # even if there is no logged in user, we can show the blog
+    l = posts.get_posts_by_tag(tag, 10)
+
+    return bottle.template('blog_template', dict(myposts=l, username=username))
 
 # Displays a particular blog post
 @bottle.get("/post/<permalink>")
