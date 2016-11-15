@@ -1,0 +1,23 @@
+use test
+db.zips.aggregate([
+	{ 
+		$group : {
+			_id: {city : "$city", state: "$state"},
+			population: { $sum: "$pop" }
+		}
+	},
+	{ 
+		$match : { 
+			$and : [
+				{ $or : [ { "_id.state" : "CA"}, { "_id.state" : "NY"} ] },
+				{ population: { $gt: 25000 } }
+			]
+		}
+	},
+	{ 
+		$group : {
+			_id: 0,
+			population_avg: { $avg: "$population" }
+		}
+	}
+])

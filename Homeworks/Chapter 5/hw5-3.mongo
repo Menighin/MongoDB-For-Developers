@@ -1,0 +1,32 @@
+use school
+db.grades.aggregate([
+	{
+		$unwind: "$scores"
+	},
+	{
+		$project: {
+			student_id: "$student_id",
+			class_id: "$class_id",
+			type: "$scores.type",
+			score: "$scores.score"
+		}
+	},
+	{
+		$match : { type : { $ne: 'quiz' } }
+	},
+	{
+		$group: {
+			_id: {class: "$class_id", student: "$student_id" },
+			avg_student: { $avg: "$score" } 
+		}
+	},
+	{
+		$group: {
+			_id: {class: "$_id.class"},
+			avg_class: { $avg: "$avg_student" } 
+		}
+	},
+	{
+		$sort: {avg_class: -1}
+	}
+])
