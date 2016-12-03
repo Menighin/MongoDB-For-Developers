@@ -1,0 +1,4 @@
+db.messages.aggregate([
+	{ $unwind: "$headers.To" },
+	{ $project: { "data" : { "from": "$headers.From", "to" : "$headers.To", "filename" : "$filename" } } }
+]);
